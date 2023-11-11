@@ -17,5 +17,7 @@ struct Tree
 };
 
 void tree_ctor(Tree *tree);
+void add_tree_node(Tree *tree, elem_t value);
+void print_node(const TreeNode * node);
 
 #endif //TREE_H_INCLUDED
