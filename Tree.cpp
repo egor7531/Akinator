@@ -3,6 +3,17 @@
 
 #include "Tree.h"
 
+void * operator_new(const int count)
+{
+    void * ptr = calloc(count, sizeof(char));
+    return ptr;
+}
+                                                //зачем нужны эти функции?
+void operator_delete(void * ptr)
+{
+    free(ptr);
+}
+
 void tree_ctor(Tree *tree)
 {
     tree->size = 0;
@@ -12,10 +23,23 @@ void tree_ctor(Tree *tree)
         abort();*/
 }
 
-void * operator_new(const int count)
+void delete_node(const TreeNode * node)
 {
-    void * ptr = calloc(count, sizeof(char));
-    return ptr;
+    if(!node)
+    {
+        printf("nil ");
+        return;
+    }
+    printf("( ");
+    printf("%d ", node->data);
+    delete_node(node->leftNode);
+    delete_node(node->rightNode);
+    printf(") ");
+}
+
+void tree_dtor(Tree *tree)
+{
+
 }
 
 void add_tree_node(Tree *tree, elem_t value)
@@ -46,7 +70,7 @@ void add_tree_node(Tree *tree, elem_t value)
         }
         else
         {
-            if(caront->rightNode== NULL)
+            if(caront->rightNode == NULL)
             {
                 caront->rightNode = node;
                 break;
@@ -72,16 +96,4 @@ void add_tree_node(Tree *tree, elem_t value)
         return add_tree_node(node->rightNode, value);
 }*/
 
-void print_node(const TreeNode * node)
-{
-    if(!node)
-    {
-        printf("nil ");
-        return;
-    }
-    printf("( ");
-    printf("%d ", node->data);
-    print_node(node->leftNode);
-    print_node(node->rightNode);
-    printf(") ");
-}
+
