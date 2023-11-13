@@ -1,25 +1,25 @@
 digraph Tree
 {
 rankdir = TB;
-node_15865200 [label = "10"];
-node_15865200 -> node_15865224;
-node_15865224 [label = "5"];
-node_15865224 -> node_15865344;
-node_15865344 [label = "3"];
-node_15865224 -> node_15865416;
-node_15865416 [label = "7"];
-node_15865200 -> node_15865248;
-node_15865248 [label = "15"];
-node_15865248 -> node_15865272;
-node_15865272 [label = "12"];
-node_15865272 -> node_15865320;
-node_15865320 [label = "11"];
-node_15865248 -> node_15865296;
-node_15865296 [label = "20"];
-node_15865296 -> node_15865368;
-node_15865368 [label = "20"];
-node_15865368 -> node_15865392;
-node_15865392 [label = "16"];
-node_15865296 -> node_15865440;
-node_15865440 [label = "21"];
+node_12064112 [label = "10"];
+node_12064112 -> node_12064136;
+node_12064136 [label = "5"];
+node_12064136 -> node_12064256;
+node_12064256 [label = "3"];
+node_12064136 -> node_12064328;
+node_12064328 [label = "7"];
+node_12064112 -> node_12064160;
+node_12064160 [label = "15"];
+node_12064160 -> node_12064184;
+node_12064184 [label = "12"];
+node_12064184 -> node_12064232;
+node_12064232 [label = "11"];
+node_12064160 -> node_12064208;
+node_12064208 [label = "20"];
+node_12064208 -> node_12064280;
+node_12064280 [label = "20"];
+node_12064280 -> node_12064304;
+node_12064304 [label = "16"];
+node_12064208 -> node_12064352;
+node_12064352 [label = "21"];
 }

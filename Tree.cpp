@@ -1,21 +1,37 @@
+#include <assert.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 #include "Tree.h"
 
 void * operator_new(const int count)
 {
+    #ifdef DEBUG
+    assert(count > 0);
+    #endif
+
     void * ptr = calloc(count, sizeof(char));
+
+    if(ptr == nullptr)
+        abort();
+
     return ptr;
 }
                                                 //зачем нужны эти функции?
 void operator_delete(void * ptr)
 {
+    #ifdef DEBUG
+    assert(ptr != nullptr);
+    #endif
+
     free(ptr);
 }
 
 void tree_ctor(Tree *tree)
 {
+    #ifdef DEBUG
+    assert(tree != nullptr);
+    #endif
+
     tree->size = 0;
     /*tree->root = (TreeNode *)calloc(1, sizeof(TreeNode));
     tree->root->data = 10;
@@ -23,28 +39,31 @@ void tree_ctor(Tree *tree)
         abort();*/
 }
 
-void delete_node(const TreeNode * node)
+void tree_node_dtor( TreeNode * node)
 {
     if(!node)
-    {
-        printf("nil ");
         return;
-    }
-    printf("( ");
-    printf("%d ", node->data);
-    delete_node(node->leftNode);
-    delete_node(node->rightNode);
-    printf(") ");
+
+    tree_node_dtor(node->leftNode);
+    tree_node_dtor(node->rightNode);
+    operator_delete(node);
 }
 
 void tree_dtor(Tree *tree)
 {
-
+    tree_node_dtor(tree->root);
+    tree->size = 0;
+    tree->root = nullptr;
+    tree = nullptr;
 }
 
 void add_tree_node(Tree *tree, elem_t value)
 {
-    if(tree->root == NULL)
+    #ifdef DEBUG
+    assert(tree != nullptr);
+    #endif
+
+    if(tree->root == nullptr)
     {
         tree->root = (TreeNode *)operator_new(sizeof(TreeNode));
         tree->root->data = value;
@@ -60,7 +79,7 @@ void add_tree_node(Tree *tree, elem_t value)
     {
         if(value <= caront->data)
         {
-            if(caront->leftNode == NULL)
+            if(caront->leftNode == nullptr)
             {
                 caront->leftNode = node;
                 break;
@@ -70,7 +89,7 @@ void add_tree_node(Tree *tree, elem_t value)
         }
         else
         {
-            if(caront->rightNode == NULL)
+            if(caront->rightNode == nullptr)
             {
                 caront->rightNode = node;
                 break;
@@ -81,19 +100,4 @@ void add_tree_node(Tree *tree, elem_t value)
     }
     tree->size++;
 }
-
-/*TreeNode * add_tree_node(TreeNode * node, elem_t value)
-{
-    if(node == NULL)
-    {
-        node = (TreeNode *)operator_new(sizeof(TreeNode));
-        node->data = value;
-        return node;
-    }
-    else if(value <= node->data)
-        return add_tree_node(node->leftNode, value);
-    else
-        return add_tree_node(node->rightNode, value);
-}*/
-
 
