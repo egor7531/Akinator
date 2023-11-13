@@ -23,22 +23,16 @@ void get_free_node(const TreeNode * node, FILE * fp)
     assert(fp != NULL);
     assert(node != NULL);
 
-    fprintf(fp, "%d", node->data);
+    fprintf(fp, "node_%d [label = \"%d\"];\n", node, node->data);
+
     if(!node->leftNode)
-    {
-        fprintf(fp, ";\n");
         return;
-    }
-    fprintf(fp, "->", node->data);
+    fprintf(fp, "node_%d -> node_%d;\n", node, node->leftNode);
     get_free_node(node->leftNode, fp);
 
-    fprintf(fp, "%d", node->data);
     if(!node->rightNode)
-    {
-        fprintf(fp, ";\n");
         return;
-    }
-    fprintf(fp, "->", node->data);
+    fprintf(fp, "node_%d -> node_%d;\n", node, node->rightNode);
     get_free_node(node->rightNode, fp);
 }
 
