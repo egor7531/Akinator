@@ -20,11 +20,11 @@ struct Tree
 };
 
 void tree_ctor(Tree *tree);
-void add_tree_node(Tree *tree, const elem_t value);
 void tree_dtor(Tree *tree);
+void add_tree_node(Tree *tree, const elem_t value);
 
-void read_buf(Tree *tree, char *buf);
-void guess_object(Tree *tree, const char *object);
+void * operator_new(const int count);
+void operator_delete(void * ptr);
 
 void read_buf_in_tree(TreeNode **node, char **buf);
 

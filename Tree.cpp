@@ -49,6 +49,7 @@ void tree_node_dtor( TreeNode * node)
     tree_node_dtor(node->leftNode);
     tree_node_dtor(node->rightNode);
     operator_delete(node);
+    operator_delete(node);
 }
 
 void tree_dtor(Tree *tree)
@@ -119,6 +120,10 @@ void get_object(char *buf, char *object)
 
 void read_buf_in_tree(TreeNode **node, char **buf)
 {
+    #ifdef DEBUG
+    assert(buf != nullptr);
+    #endif
+
     char object[MAX_SIZE_OBJECT] = {};
     sscanf(*buf, "%s", object);
 
@@ -145,14 +150,4 @@ void read_buf_in_tree(TreeNode **node, char **buf)
 
     read_buf_in_tree(&((*node)->leftNode), buf);
     read_buf_in_tree(&((*node)->rightNode), buf);
-}
-
-void guess_object(Tree *tree, const char *object)
-{
-    #ifdef DEBUG
-    assert(tree != nullptr);
-    assert(object != nullptr);
-    #endif
-
-
 }

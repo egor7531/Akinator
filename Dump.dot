@@ -1,15 +1,17 @@
 digraph Tree
 {
 rankdir = TB;
-node_8197648 [label = "10"];
-node_8197648 -> node_8197736;
-node_8197736 [label = "5"];
-node_8197648 -> node_8197824;
-node_8197824 [label = "15"];
-node_8197824 -> node_8197912;
-node_8197912 [label = "12"];
-node_8197912 -> node_8198000;
-node_8198000 [label = "11"];
-node_8197824 -> node_8198088;
-node_8198088 [label = "20"];
+node_7281032 [label = "have a KB"];
+node_7281032 -> node_7285392;
+node_7285392 [label = "FRKT"];
+node_7281032 -> node_7285480;
+node_7285480 [label = "pidor"];
+node_7285480 -> node_7289672;
+node_7289672 [label = "FIVT"];
+node_7285480 -> node_7289760;
+node_7289760 [label = "haven't a bathroom"];
+node_7289760 -> node_7289848;
+node_7289848 [label = "FOPF"];
+node_7289760 -> node_7289936;
+node_7289936 [label = "unknown who"];
 }

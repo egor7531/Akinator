@@ -4,25 +4,29 @@
 
 #include "Tree.h"
 
-void print_node(const TreeNode * node)
+void print_nodes(FILE *fp, const TreeNode * node)
 {
+    #ifdef DEBUG
+    assert(fp != nullptr);
+    #endif
+
     if(!node)
     {
-        printf("nil ");
+        fprintf(fp, "nil ");
         return;
     }
-    printf("( ");
-    printf("%s ", node->data);
-    print_node(node->leftNode);
-    print_node(node->rightNode);
-    printf(") ");
+    fprintf(fp, "( ");
+    fprintf(fp, "\"%s\" ", node->data);
+    print_nodes(fp, node->leftNode);
+    print_nodes(fp, node->rightNode);
+    fprintf(fp, ") ");
 }
 
 void get_free_node(const TreeNode * node, FILE * fp)
 {
     #ifdef DEBUG
-    assert(fp != NULL);
-    assert(node != NULL);
+    assert(fp != nullptr);
+    assert(node != nullptr);
     #endif
 
     fprintf(fp, "node_%d [label = \"%s\"];\n", node, node->data);
@@ -41,14 +45,14 @@ void get_free_node(const TreeNode * node, FILE * fp)
 void tree_graphic_dump(const Tree * tree)
 {
     #ifdef DEBUG
-    assert(tree != NULL);
-    assert(tree->root != NULL);
+    assert(tree != nullptr);
+    assert(tree->root != nullptr);
     #endif
 
     const char * nameFile = "Dump.dot";
     FILE * fp = fopen(nameFile, "wb");
 
-    if(fp == NULL)
+    if(fp == nullptr)
     {
         printf("Can't open file: %s\n", nameFile);
         fclose(fp);
