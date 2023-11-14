@@ -12,7 +12,7 @@ void print_node(const TreeNode * node)
         return;
     }
     printf("( ");
-    printf("%d ", node->data);
+    printf("%s ", node->data);
     print_node(node->leftNode);
     print_node(node->rightNode);
     printf(") ");
@@ -25,7 +25,7 @@ void get_free_node(const TreeNode * node, FILE * fp)
     assert(node != NULL);
     #endif
 
-    fprintf(fp, "node_%d [label = \"%d\"];\n", node, node->data);
+    fprintf(fp, "node_%d [label = \"%s\"];\n", node, node->data);
 
     if(!node->leftNode)
         return;
