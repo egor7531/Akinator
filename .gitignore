@@ -1,0 +1,15 @@
+
+a.exe
+*.txt
+File.cpp
+File.h
+Main.cpp
+Dump.dot
+*.dot
+Dump.dot
+StackDump.h
+StackDump.cpp
+Stack.h
+Stack.cpp
+Dump.dot
+Dump.dot

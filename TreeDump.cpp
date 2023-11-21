@@ -6,7 +6,7 @@
 
 void print_nodes(FILE *fp, const TreeNode * node)
 {
-    #ifdef DEBUG
+    #ifdef NDEBUG
     assert(fp != nullptr);
     #endif
 
@@ -24,7 +24,7 @@ void print_nodes(FILE *fp, const TreeNode * node)
 
 void get_free_node(const TreeNode * node, FILE * fp)
 {
-    #ifdef DEBUG
+    #ifdef NDEBUG
     assert(fp != nullptr);
     assert(node != nullptr);
     #endif
