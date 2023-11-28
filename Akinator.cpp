@@ -18,7 +18,9 @@ void clear_buffer(void);
 void get_answer(char *answer);
 void guess_object(Tree *tree);
 void get_info_object(const TreeNode *node, Stack *features, const char *object, bool *beObject);
-void define_object(Tree *tree);
+void define_object(const Tree *tree);
+void compare_objects(const Tree *tree);
+
 int main()
 {
     Tree tree = {};
@@ -44,33 +46,21 @@ int main()
         switch(command)
         {
             case 1:
-            {
                 guess_object(&tree);
-                FILE *fp = fopen(nameFile, "wb");
-                if(fp == nullptr)
-                {
-                    printf("Can't open file: %s\n", nameFile);
-                    abort();
-                }
-                print_nodes(fp, tree.root);
-                fclose(fp);
                 break;
-            }
-
             case 2:
+                compare_objects(&tree);
                 break;
-
             case 3:
                 define_object(&tree);
                 break;
-
             case 4:
             {
                 tree_graphic_dump(&tree);
                 if(system("dot dump.dot -T png -o dump.png") > 0)
                 {
-                printf("Error work of \"system\"\n");
-                abort();
+                    printf("Error work of \"system\"\n");
+                    abort();
                 }
 
                 FILE *fp = fopen(nameFile, "wb");
@@ -83,7 +73,6 @@ int main()
                 fclose(fp);
                 break;
             }
-
             default: printf("Unknown command: %d\n", command);
                 break;
         }
@@ -98,10 +87,8 @@ int main()
 
 void get_object(char *buf, char *object)
 {
-    #ifdef NDEBUG
     assert(buf != nullptr);
     assert(object != nullptr);
-    #endif
 
     for(int i = 0; *buf != '"'; i++)
     {
@@ -112,9 +99,7 @@ void get_object(char *buf, char *object)
 
 void read_buf_in_tree(TreeNode **node, char **buf)
 {
-    #ifdef NDEBUG
     assert(buf != nullptr);
-    #endif
 
     char object[MAX_SIZE_OBJECT] = {};
     sscanf(*buf, "%s", object);
@@ -159,14 +144,12 @@ void read_buf_in_tree(TreeNode **node, char **buf)
 
 void clear_buffer(void)
 {
-    while(getchar() != '\n');
+    while(getchar() != '\n') {;}
 }
 
 void get_answer(char *answer)
 {
-    #ifdef NDEBUG
     assert(answer != nullptr);
-    #endif
 
     fgets(answer, MAX_SIZE_ANSWER, stdin);
     answer[strlen(answer) - 1] = 0;
@@ -174,10 +157,8 @@ void get_answer(char *answer)
 
 void guess_object(Tree *tree)
 {
-    #ifdef NDEBUG
     assert(tree != nullptr);
     assert(tree->root != nullptr);
-    #endif
 
     char answer[MAX_SIZE_ANSWER] = {};
     TreeNode *caront = tree->root;
@@ -190,7 +171,7 @@ void guess_object(Tree *tree)
             get_answer(answer);
 
             if(!strcmp(answer, "yes"))
-                printf("I guessed !!!\n");
+                printf("I guessed !\n");
             else
             {
                 caront->leftNode = (TreeNode *)calloc(sizeof(char), sizeof(TreeNode));
@@ -237,40 +218,15 @@ void guess_object(Tree *tree)
     }
 }
 
-void get_info_object(const Tree *tree, const TreeNode *node, Stack *features, const char *object, bool *beObject)
+void get_info_object(const TreeNode *node, Stack *features, const char *object, bool *beObject)
 {
-    #ifdef NDEBUG
-    assert(tree != nullptr);
     assert(node != nullptr);
     assert(features != nullptr);
     assert(object != nullptr);
     assert(beObject != nullptr);
-    #endif
 
     if(!strcmp(node->data, object))
-    {
         *beObject = true;
-
-        TreeNode *caront = tree->root;
-        printf("Your object \"%s\" has this definition: ", object);
-        for(int i = 0; i < features->sizeStack - 1; i++)
-        {
-            if(features->data[i])
-            {
-                printf("%s, ", caront->data);
-                caront = caront->leftNode;
-            }
-            else
-            {
-                printf("not %s, ", caront->data);
-                caront = caront->rightNode;
-            }
-        }
-        if(features->data[features->sizeStack - 1])
-            printf("%s\n", caront->data);
-        else
-            printf("not %s\n", caront->data);
-    }
 
     if(*beObject)
         return;
@@ -278,26 +234,28 @@ void get_info_object(const Tree *tree, const TreeNode *node, Stack *features, co
     if(node->leftNode != nullptr && node->rightNode != nullptr)
     {
         stack_push(features, 1);
-        get_info_object(tree, node->leftNode, features, object, beObject);
-        int x = 0;
-        stack_pop(features, &x);
+        get_info_object(node->leftNode, features, object, beObject);
 
         if(*beObject)
             return;
 
+        int x = 0;
+        stack_pop(features, &x);
         stack_push(features, 0);
-        get_info_object(tree, node->rightNode, features, object, beObject);
+        get_info_object(node->rightNode, features, object, beObject);
+
+        if(*beObject)
+            return;
+
         x = 0;
         stack_pop(features, &x);
     }
 }
 
-void define_object(Tree *tree)
+void define_object(const Tree *tree)
 {
-    #ifdef NDEBUG
     assert(tree != nullptr);
     assert(tree->root != nullptr);
-    #endif
 
     printf("Enter object you want to define: ");
     char answer[MAX_SIZE_ANSWER] = {};
@@ -305,10 +263,128 @@ void define_object(Tree *tree)
 
     Stack features = {};
     stack_ctor(&features);
-
     bool beObject = false;
-    get_info_object(tree, tree->root, &features, answer, &beObject);
+    get_info_object(tree->root, &features, answer, &beObject);
 
     if(!beObject)
-        printf("There is no such word: %s\n", answer);
+    {
+        printf("There is no such word\n");
+        return;
+    }
+
+    printf("Definition of \"%s\": ", answer);
+    TreeNode *caront = tree->root;
+    for(int i = 0; i < features.sizeStack - 1; i++)
+    {
+        if(features.data[i])
+        {
+            printf("%s, ", caront->data);
+            caront = caront->leftNode;
+        }
+        else
+        {
+            printf("not %s, ", caront->data);
+            caront = caront->rightNode;
+        }
+    }
+    if(features.data[features.sizeStack - 1])
+    {
+        printf("%s\n", caront->data);
+        caront = caront->leftNode;
+    }
+    else
+    {
+        printf("not %s\n", caront->data);
+        caront = caront->rightNode;
+    }
+}
+
+void compare_objects(const Tree *tree)
+{
+    assert(tree != nullptr);
+
+    printf("Enter first object: ");
+    char answer1[MAX_SIZE_ANSWER] = {};
+    get_answer(answer1);
+    Stack features1 = {};
+    stack_ctor(&features1);
+    bool beObject1 = false;
+    get_info_object(tree->root, &features1, answer1, &beObject1);
+
+    printf("Enter second object: ");
+    char answer2[MAX_SIZE_ANSWER] = {};
+    get_answer(answer2);
+    Stack features2 = {};
+    stack_ctor(&features2);
+    bool beObject2 = false;
+    get_info_object(tree->root, &features2, answer2, &beObject2);
+
+    if(!beObject1)
+    {
+        printf("There is no such word: %s\n", answer1);
+        return;
+    }
+
+    if(!beObject2)
+    {
+        printf("There is no such word: %s\n", answer2);
+        return;
+    }
+
+    TreeNode *node = tree->root;
+    int i = 0;
+    for(; i < features1.sizeStack && i < features2.sizeStack &&
+                        features1.data[i] == features2.data[i]; i++)
+    {
+        if(i == 0)
+            printf("Your objects are similar in that ");
+
+        if(features1.data[i])
+        {
+            printf("%s, ", node->data);
+            node = node->leftNode;
+        }
+        else
+        {
+            printf("not %s, ", node->data);
+            node = node->rightNode;
+        }
+    }
+    printf("\n");
+
+    TreeNode *node1 = node;
+    for(int j = i; j < features1.sizeStack; j++)
+    {
+        if(i == j)
+            printf("Your objects differ in that object \"%s\" is ", answer1);
+
+        if(features1.data[j])
+        {
+            printf("%s, ", node1->data);
+            node1 = node1->leftNode;
+        }
+        else
+        {
+            printf("not %s, ", node1->data);
+            node1 = node1->rightNode;
+        }
+    }
+
+    for(int j = i; j < features2.sizeStack; j++)
+    {
+        if(i == j)
+            printf("but \"%s\" is ", answer2);
+
+        if(features2.data[j])
+        {
+            printf("%s, ", node->data);
+            node = node->leftNode;
+        }
+        else
+        {
+            printf("not %s, ", node->data);
+            node = node->rightNode;
+        }
+    }
+    printf("\n");
 }

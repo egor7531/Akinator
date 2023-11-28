@@ -1,8 +1,6 @@
 #ifndef TREE_H_INCLUDED
 #define TREE_H_INCLUDED
 
-#define NDEBUG
-
 typedef char * elem_t;
 
 struct TreeNode

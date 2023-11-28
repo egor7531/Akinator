@@ -7,9 +7,7 @@
 
 void tree_ctor(Tree *tree)
 {
-    #ifdef DEBUG
     assert(tree != nullptr);
-    #endif
 
     tree->size = 0;
     /*tree->root = (TreeNode *)calloc(1, sizeof(TreeNode));
@@ -38,9 +36,7 @@ void tree_dtor(Tree *tree)
 
 void add_tree_node(Tree *tree, elem_t value)
 {
-    #ifdef NDEBUG
     assert(tree != nullptr);
-    #endif
 
     if(tree->root == nullptr)
     {
@@ -78,7 +74,7 @@ void add_tree_node(Tree *tree, elem_t value)
                 break;
             }
             else
-            caront = caront->rightNode;
+                caront = caront->rightNode;
         }
     }
     tree->size++;
