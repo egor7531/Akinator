@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "Tree.h"
+#include "TreeDump.h"
 
 TreeNode* tree_node_new(Tree* tree, void* elem)
 {
@@ -12,11 +13,17 @@ TreeNode* tree_node_new(Tree* tree, void* elem)
 
     TreeNode* node = (TreeNode*)calloc(1, sizeof(TreeNode));
     if(node == nullptr)
+    {
+        tree_status_errors(NODE_IS_NULL);
         return nullptr;
+    }
 
     node->elem = tree->elem_ctor(elem);
     if(node->elem == nullptr)
+    {
+        tree_status_errors(ELEM_IS_NULL);
         return nullptr;
+    }
 
     node->leftNode = nullptr;
     node->rightNode = nullptr;
@@ -28,20 +35,20 @@ TreeNode* tree_node_new(Tree* tree, void* elem)
     return node;
 }
 
-void tree_node_dtor(Tree* tree, TreeNode* node)
+void tree_nodes_dtor(Tree* tree, TreeNode* node)
 {
-    assert(tree != NULL);
+    assert(tree != nullptr);
 
-    if(!node)
+    if(node == nullptr)
         return;
 
-    tree_node_dtor(tree, node->leftNode);
-    tree_node_dtor(tree, node->leftNode);
+    tree_nodes_dtor(tree, node->leftNode);
+    tree_nodes_dtor(tree, node->rightNode);
     tree->elem_dtor(node->elem);
     free(node);
 }
 
-Tree* tree_ctor(void* (*elem_ctor)(void* data),
+Tree* tree_ctor(void* (*elem_ctor)(void* elem),
                 void (*elem_dtor)(void* elem),
                 void (*write_elem)(FILE* fp, void* elem))
 {
@@ -51,14 +58,16 @@ Tree* tree_ctor(void* (*elem_ctor)(void* data),
 
     Tree* tree = (Tree*)calloc(1, sizeof(Tree));
     if(tree == nullptr)
+    {
+        tree_status_errors(TREE_IS_NULL);
         return nullptr;
+    }
 
     tree->root = nullptr;
     tree->elem_ctor = elem_ctor;
     tree->elem_dtor = elem_dtor;
     tree->write_elem = write_elem;
-    int size = 0;
-    int errors = NO_ERRORS;
+    tree->size = 0;
 
     return tree;
 }
@@ -67,22 +76,22 @@ void tree_dtor(Tree* tree)
 {
     assert(tree != NULL);
 
-    tree_node_dtor(tree, tree->root);
+    tree_nodes_dtor(tree, tree->root);
     free(tree);
 }
 
-void tree_link_node(TreeNode* node1, TreeNode* node2)
+void tree_link_node(TreeNode* nodeParent, TreeNode* nodeSon)
 {
-    assert(node1 != nullptr);
-    assert(node2 != nullptr);
+    assert(nodeParent != nullptr);
+    assert(nodeSon != nullptr);
 
-    if(node1->leftNode != nullptr && node1->rightNode != nullptr)
-        return;
+    if(nodeParent->leftNode != nullptr && nodeParent->rightNode != nullptr)
+        assert(false);
 
-    if(node1->leftNode == nullptr)
-        node1->leftNode = node2;
+    if(nodeParent->leftNode == nullptr)
+        nodeParent->leftNode = nodeSon;
     else
-        node1->rightNode = node2;
+        nodeParent->rightNode = nodeSon;
 }
 
 TreeNode* tree_node_insert(Tree* tree, TreeNode* nodeParent, void* elem)
@@ -101,3 +110,18 @@ TreeNode* tree_node_insert(Tree* tree, TreeNode* nodeParent, void* elem)
 
     return nodeSon;
 }
+
+/*void tree_node_delete(Tree* tree, TreeNode* node)
+{
+    assert(tree != nullptr);
+
+    if(node == nullptr)
+        return;
+
+    if(node->leftNode != nullptr && node->rightNode != nullptr)
+        return;
+
+    if(node->leftNode != nullptr)
+
+
+}*/

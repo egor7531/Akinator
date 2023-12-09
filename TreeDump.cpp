@@ -5,7 +5,28 @@
 
 #include "TreeDump.h"
 
-void get_conection_nodes(const Tree* tree, const TreeNode* node, FILE* fp)
+void tree_status_errors(int err)
+{
+    assert(err > 0);
+
+    const char* nameFile = "Errors.txt";
+    FILE* fp = fopen(nameFile, "rb");
+    if(fp == nullptr)
+        return;
+
+    if(err & TREE_IS_NULL)
+        fprintf(fp, "Pointer on tree is nullptr\n");
+    if(err & NODE_IS_NULL)
+        fprintf(fp, "Pointer on node of tree is nullptr\n");
+    if(err & ELEM_IS_NULL)
+        fprintf(fp, "Pointer on elem of node is nullptr\n");
+    if(err & FP_IS_NULL)
+        fprintf(fp, "Pointer on file is nullptr\n");
+    if(err & ERROR_WORK_SYSTEM)
+        fprintf(fp, "Error work function \"system\"\n");
+}
+
+void get_connection_nodes(const Tree* tree, const TreeNode* node, FILE* fp)
 {
     assert(fp != nullptr);
     assert(tree != nullptr);
@@ -18,30 +39,12 @@ void get_conection_nodes(const Tree* tree, const TreeNode* node, FILE* fp)
     if(!node->leftNode)
         return;
     fprintf(fp, "node_%d -> node_%d;\n", node, node->leftNode);
-    get_conection_nodes(tree, node->leftNode, fp);
+    get_connection_nodes(tree, node->leftNode, fp);
 
     if(!node->rightNode)
         return;
     fprintf(fp, "node_%d -> node_%d;\n", node, node->rightNode);
-    get_conection_nodes(tree, node->rightNode, fp);
-}
-
-void tree_system(const Tree* tree, const char* nameFileDot, const char* nameFilePng)
-{
-    assert(tree != nullptr);
-    assert(nameFileDot != nullptr);
-    assert(nameFilePng != nullptr);
-
-    const int MAX_SIZE_COMMAND = 100;
-    char command[MAX_SIZE_COMMAND] = "dot ";
-    strncat(command, nameFileDot, MAX_SIZE_COMMAND);
-    strncat(command, " -T png -o ", MAX_SIZE_COMMAND);
-    strncat(command, nameFilePng, MAX_SIZE_COMMAND);
-
-    if(system(command) > 0)
-    {
-        return;
-    }
+    get_connection_nodes(tree, node->rightNode, fp);
 }
 
 void tree_graphic_dump(const Tree * tree, const char* nameFileDot, const char* nameFilePng)
@@ -52,17 +55,27 @@ void tree_graphic_dump(const Tree * tree, const char* nameFileDot, const char* n
     FILE * fp = fopen(nameFile, "wb");
     if(fp == nullptr)
     {
-        printf("Can't open file: %s\n", nameFile);
-        fclose(fp);
-        abort();
+        tree_status_errors(FP_IS_NULL);
+        return;
     }
 
     fprintf(fp, "digraph Tree\n"
                 "{\n"
                 "rankdir = TB;\n");
-    get_conection_nodes(tree, tree->root, fp);
+    get_connection_nodes(tree, tree->root, fp);
 
     fprintf(fp, "}");
     fclose(fp);
-    tree_system(tree, nameFileDot, nameFilePng);
+
+    const int MAX_SIZE_COMMAND = 100;
+    char command[MAX_SIZE_COMMAND] = "dot ";
+    strncat(command, nameFileDot, MAX_SIZE_COMMAND);
+    strncat(command, " -T png -o ", MAX_SIZE_COMMAND);
+    strncat(command, nameFilePng, MAX_SIZE_COMMAND);
+
+    if(system(command) > 0)
+    {
+        tree_status_errors(ERROR_WORK_SYSTEM);
+        return;
+    }
 }
